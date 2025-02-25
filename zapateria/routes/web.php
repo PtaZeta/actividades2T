@@ -16,14 +16,14 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/carritos/ver', function () {
-        $carrito = session('carrito', []);
-        $total = collect($carrito)->sum(fn($item) => $item['precio'] * $item['cantidad']);
-        return view('carritos.ver', [
-            'carrito' => $carrito,
-            'total' => $total,
-        ]);
-    })->name('carritos.ver');
+Route::get('/carritos/ver', function () {
+    $carrito = session('carrito', []);
+    $total = collect($carrito)->sum(fn($item) => $item['precio'] * $item['cantidad']);
+    return view('carritos.ver', [
+        'carrito' => $carrito,
+        'total' => $total,
+    ]);
+})->name('carritos.ver');
     Route::get('/facturas/{factura}', [FacturaController::class, 'show'])->name('facturas.show');
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
     Route::resource('facturas', FacturaController::class)->except('show', 'index');
