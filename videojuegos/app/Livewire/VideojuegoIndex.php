@@ -59,11 +59,9 @@ class VideojuegoIndex extends Component
     }
 
 
-    public function crear()
+    public function crear(StoreVideojuegoRequest $request)
     {
-        $validated = $this->validate((new StoreVideojuegoRequest())->rules());
-
-        Videojuego::create($validated);
+        Videojuego::create($request->validated());
 
         // Auth::user()->videojuegos()->attach($videojuego);
         $this->cancelar();

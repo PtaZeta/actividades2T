@@ -24,7 +24,7 @@ class Vuelo extends Model
 
     public function formatearFecha($fecha)
     {
-        return Carbon::parse($fecha)->format('H:i d/m/Y');
+        return Carbon::parse($fecha)->setTimeZone('Europe/Madrid')->format('H:i d/m/Y');
     }
 
     public function total($vuelo)

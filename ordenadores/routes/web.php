@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrdenadorController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -12,4 +13,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+Route::resource('ordenadores', OrdenadorController::class)->parameters([
+    'ordenadores' => 'ordenador'
+]);
 require __DIR__.'/auth.php';
