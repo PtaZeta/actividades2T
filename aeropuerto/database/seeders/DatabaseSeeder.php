@@ -16,5 +16,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             VueloSeeder::class,
         ]);
+
+        // User::factory()->create([
+        //     'name' => 'admin',
+        // ]);
     }
 }
