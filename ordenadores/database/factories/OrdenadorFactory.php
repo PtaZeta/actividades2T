@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Aula;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class OrdenadorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'modelo' => fake()->name(),
+            'marca' => fake()->name(),
+            'aula_id' => Aula::inRandomOrder()->first()->id ?? Aula::factory(),
         ];
     }
 }
