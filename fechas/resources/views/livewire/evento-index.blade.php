@@ -10,9 +10,15 @@
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-4">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">Nombre</th>
-                                    <th scope="col" class="px-6 py-3">Fecha inicio</th>
-                                    <th scope="col" class="px-6 py-3">Fecha fin</th>
+                                    <th wire:click="ordenar('nombre')" scope="col" class="px-6 py-3">
+                                        Nombre {{ $campoOrdenar === 'nombre' ? ($direccionOrdenar === 'asc' ? '↑' : '↓') : '' }}
+                                    </th>
+                                    <th wire:click="ordenar('fecha_inicio')" scope="col" class="px-6 py-3">
+                                        Fecha inicio {{ $campoOrdenar === 'fecha_inicio' ? ($direccionOrdenar === 'asc' ? '↑' : '↓') : '' }}
+                                    </th>
+                                    <th wire:click="ordenar('fecha_fin')" scope="col" class="px-6 py-3">
+                                        Fecha fin {{ $campoOrdenar === 'fecha_fin' ? ($direccionOrdenar === 'asc' ? '↑' : '↓') : '' }}
+                                    </th>
                                     <th scope="col" class="px-6 py-3">Estado</th>
                                     <th scope="col" class="px-6 py-3">Acciones</th>
                                 </tr>

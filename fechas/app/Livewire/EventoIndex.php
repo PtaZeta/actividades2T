@@ -11,6 +11,21 @@ class EventoIndex extends Component
     public $fechaFin;
     public $eventos = [];
 
+    public $campoOrdenar = 'nombre';
+    public $direccionOrdenar = 'asc';
+
+    public function ordenar($campo)
+    {
+        if ($this->campoOrdenar === $campo) {
+            $this->direccionOrdenar = $this->direccionOrdenar === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->campoOrdenar = $campo;
+            $this->direccionOrdenar = 'asc';
+        }
+
+        $this->filtrar();
+    }
+
     public function updated($propertyName)
     {
         if ($propertyName === 'fechaInicio' || $propertyName === 'fechaFin') {
@@ -30,6 +45,8 @@ class EventoIndex extends Component
             $query->whereDate('fecha_fin', '<=', Carbon::createFromFormat('Y-m-d', $this->fechaFin));
         }
 
+        $query->orderBy($this->campoOrdenar, $this->direccionOrdenar);
+
         $this->eventos = $query->get();
     }
 
@@ -38,9 +55,10 @@ class EventoIndex extends Component
         $this->eventos = Evento::all();
     }
 
-
     public function render()
     {
-        return view('livewire.evento-index');
+        return view('livewire.evento-index', [
+            'eventos' => $this->eventos,
+        ]);
     }
 }
