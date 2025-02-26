@@ -20,10 +20,10 @@ class superarCanciones extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($canciones, Album $album)
+    public function __construct()
     {
-        $this->canciones = $canciones;
-        $this->album = $album;
+        // $this->canciones = $canciones;
+        // $this->album = $album;
     }
 
     /**

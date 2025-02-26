@@ -52,7 +52,7 @@ Route::resource('artistas', ArtistaController::class);
 Route::get('/correo', function () {
     Mail::to('manuel@inbox.mailtrap.io')->send(new enviarCorreo);
     return redirect()->route('index');
-});
+})->name('correo');
 
 Route::get('/enviar-correo-canciones/{album}', [AlbumController::class, 'enviarCorreoSiSuperaCanciones']);
 

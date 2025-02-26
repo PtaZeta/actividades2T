@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAlbumRequest;
 use App\Http\Requests\UpdateAlbumRequest;
+use App\Mail\enviarCorreo;
 use App\Mail\superarCanciones;
 use App\Models\Album;
 use App\Models\Artista;
@@ -15,16 +16,16 @@ use Illuminate\Support\Facades\Mail;
 
 class AlbumController extends Controller
 {
-    public function enviarCorreoSiSuperaCanciones(Album $album)
-    {
-        $canciones = $album->canciones()->count();
-        if ($canciones >= 5) {
-            Mail::to('manuel@inbox.mailtrap.io')->send(new superarCanciones($canciones, $album));
-            return 'Correo enviado correctamente.';
-        } else {
-            return 'El álbum no tiene suficientes canciones para enviar el correo.';
-        }
-    }
+    // public function enviarCorreoSiSuperaCanciones(Album $album)
+    // {
+    //     $canciones = $album->canciones()->count();
+    //     if ($canciones >= 5) {
+    //         Mail::to('manuel@inbox.mailtrap.io')->send(new superarCanciones($canciones, $album));
+    //         return 'Correo enviado correctamente.';
+    //     } else {
+    //         return 'El álbum no tiene suficientes canciones para enviar el correo.';
+    //     }
+    // }
 
     public function index()
     {
@@ -73,6 +74,13 @@ class AlbumController extends Controller
 
         $album->users()->sync($request->input('usuarios'));
         $album->canciones()->sync($request->input('canciones'));
+
+        $canciones = $album->canciones()->count();
+        if ($canciones >= 5) {
+            return redirect()->route('correo');
+        } else {
+            return 'El álbum no tiene suficientes canciones para enviar el correo.';
+        }
 
         return redirect()->route('albumes.index')->with('success', 'Album created successfully.');
     }
@@ -139,6 +147,11 @@ class AlbumController extends Controller
 
         $album->users()->sync($request->input('usuarios'));
         $album->canciones()->sync($request->input('canciones'));
+
+        $canciones = $album->canciones()->count();
+        if ($canciones >= 5) {
+            return redirect()->route('correo');
+        }
 
         return redirect()->route('portada')->with('success', 'Album updated successfully.');
     }

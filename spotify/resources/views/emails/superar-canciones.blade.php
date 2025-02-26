@@ -1,5 +1,5 @@
 <x-mail::message>
-    <img src="{{ $message->embedData(
+    {{-- <img src="{{ $message->embedData(
         data: '<svg class="h-2 w-2"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20">
@@ -9,12 +9,12 @@
         </svg>',
         name: 'logo.svg',
         contentType: 'image/svg+xml',
-    )}}" />
+    )}}" /> --}}
 
 
 # Introduction
 
-![]({{ $message->embed(public_path('storage/imagenes/1.jpg')) }})
+{{-- ![]({{ $message->embed(public_path('storage/imagenes/1.jpg')) }}) --}}
 
 The **body** of your <strong>message</strong>.
 
