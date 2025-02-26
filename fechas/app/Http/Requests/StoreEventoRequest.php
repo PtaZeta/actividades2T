@@ -29,14 +29,14 @@ class StoreEventoRequest extends FormRequest
             'fecha_inicio' => [
                 'required',
                 'date',
-                'date_format:d/m/Y H:i:s',
-                Rule::date()->after(now()),
+                'date_format:Y-m-d H:i:s',
+                // Rule::date()->after(now()),
             ],
             'fecha_fin' => [
                 'required',
                 'date',
-                'date_format:d/m/Y H:i:s',
-                Rule::date()->after('fecha_inicio'),
+                'date_format:Y-m-d H:i:s',
+                // Rule::date()->after('fecha_inicio'),
             ],
         ];
     }
@@ -45,7 +45,20 @@ class StoreEventoRequest extends FormRequest
     {
         return [
             'fecha_inicio.after' => 'La fecha de inicio debe ser despues a la de hoy',
-            'fecha_fin.after' => 'La fecha de inicio debe ser anterior a la fecha de finalización.'
+            'fecha_fin.after' => 'La fecha de inicio debe ser anterior a la fecha de finalización.',
         ];
     }
+
+    // protected function prepareForValidation()
+    // {
+    //     $this->merge([
+    //         'fecha_inicio' => $this->convertDate($this->fecha_inicio),
+    //         'fecha_fin' => $this->convertDate($this->fecha_fin),
+    //     ]);
+    // }
+
+    // private function convertDate($date)
+    // {
+    //     return Carbon::createFromFormat('d/m/Y H:i:s', $date)->format('Y-m-d H:i:s');
+    // }
 }

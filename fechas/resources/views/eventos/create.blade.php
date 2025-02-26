@@ -16,7 +16,7 @@
                     <x-input-label for="fecha_inicio" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Fecha inicio
                     </x-input-label>
-                    <x-text-input name="fecha_inicio" type="text" id="fecha_inicio" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    <x-text-input name="fecha_inicio" type="text" id="fecha_inicio" placeholder='Formato: Y-m-d H:i:s' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :value="old('fecha_inicio')" />
                     <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
                 </div>
@@ -24,7 +24,7 @@
                     <x-input-label for="fecha_fin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Fecha fin
                     </x-input-label>
-                    <x-text-input name="fecha_fin" type="text" id="fecha_fin" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    <x-text-input name="fecha_fin" type="text" id="fecha_fin" placeholder='Formato: Y-m-d H:i:s' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         :value="old('fecha_fin')" />
                     <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
                 </div>

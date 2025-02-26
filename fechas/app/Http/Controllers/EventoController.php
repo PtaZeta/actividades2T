@@ -62,7 +62,11 @@ class EventoController extends Controller
      */
     public function update(UpdateEventoRequest $request, Evento $evento)
     {
-        //
+        $evento->fill($request->input());
+
+        $evento->save();
+
+        return redirect()->route('eventos.show', $evento);
     }
 
     /**
@@ -70,6 +74,8 @@ class EventoController extends Controller
      */
     public function destroy(Evento $evento)
     {
-        //
+        $evento->delete();
+
+        return redirect()->route('eventos.index');
     }
 }
