@@ -26,9 +26,9 @@ class EventoIndex extends Component
         $this->filtrar();
     }
 
-    public function updated($propertyName)
+    public function updated($variable)
     {
-        if ($propertyName === 'fechaInicio' || $propertyName === 'fechaFin') {
+        if ($variable === 'fechaInicio' || $variable === 'fechaFin') {
             $this->filtrar();
         }
     }
