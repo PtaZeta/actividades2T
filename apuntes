@@ -1,0 +1,443 @@
+--------------------------------------------------------------------------------------
+SEEDERS Y FACTORIES
+--------------------------------------------------------------------------------------
+-----------
+FACTORIES
+-----------
+
+'modelo' => fake()->name(),
+'aula_id' => Aula::inRandomOrder()->first()->id ?? Aula::factory(),
+'correo' => fake()->safeEmail,
+
+use Illuminate/Support/Str
+$seed = Str::random(10);
+'imagen' => "http://picsum.photos/seed/$seed/300/200" (comillas dobles por cojones)
+
+-- FECHA --
+
+public function definition(): array
+    {
+        $fecha_salida = fake()->dateTimeBetween('+1 days', '+1 month');
+        return [
+            'codigo' => strtoupper(fake()->randomLetter()) . strtoupper(fake()->randomLetter()) . fake()->randomNumber(4, true),
+            'origen' => strtoupper(fake()->lexify('???')), // Genera un código IATA de 3 letras aleatorias
+            'destino' => strtoupper(fake()->lexify('???')),
+            'airline' => fake()->company(),
+            'fecha_salida' => $fecha_salida,
+            'fecha_llegada' => fake()->dateTimeBetween($fecha_salida, (clone $fecha_salida)->modify('+5 month')),
+            'plazas_totales' => fake()->numberBetween(50, 300),
+            'precio' => fake()->randomFloat(2, 50, 1000),
+        ];
+    }
+    
+-- POLIMORFICA --
+
+public function definition(): array
+    {
+        $colocable_type = fake()->randomElement([Ordenador::class, Aula::class]);
+        return [
+            'nombre' => fake()->name(),
+            'colocable_id' => $colocable_type::factory()->create()->id,
+            'colocable_type' => $colocable_type,
+            // 'colocable_type' => 'App\Models\Ordenador',
+            // 'colocable_id' => Ordenador::inRandomOrder()->first()->id,
+        ];
+    }
+
+-----------
+SEEDERS
+-----------
+
+-- OrdenadorSeeder.php
+
+public function run(): void
+    {
+        Ordenador::factory(10)->create();
+    }
+    
+-- DatabaseSeeder.php
+
+public function run(): void
+    {
+
+        $this->call([
+            OrdenadorSeeder::class,
+            ... otros Seeder
+        ]);
+
+    }
+ 
+php artisan db:seed
+
+--------------------------------------------------------------------------------------
+POLITICAS Y GATES
+--------------------------------------------------------------------------------------
+-----------
+POLITICAS
+-----------
+
+public function viewAny(User $user): bool
+    {
+        return $user->name === 'admin';
+    }
+
+-- VISTA --
+
+@can('viewAny', App\Models\Ordenador::class)
+	<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+	    <x-nav-link :href="route('ordenadores.index')" :active="request()->routeIs('ordenadores.index')" wire:navigate>
+		{{ __('Ordenadores') }}
+	    </x-nav-link>
+	</div>
+@endcan
+
+-- CONTROLADOR --
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+class OrdenadorController extends Controller {
+use AuthorizesRequests;
+
+$this->authorize('viewAny', Ordenador::class);
+
+}
+
+-- WEB.PHP --
+
+Route::resource('ordenadores', OrdenadorController::class)->parameters([
+    'ordenadores' => 'ordenador',
+])->middleware('can:viewAny, App\Models\Ordenador::class');
+  ->middleware('can:view, ordenador');
+
+-----------
+GATES
+-----------
+
+-- VISTA --
+
+@can('soloAdmin')
+	<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+	    <x-nav-link :href="route('ordenadores.index')" :active="request()->routeIs('ordenadores.index')" wire:navigate>
+		{{ __('Ordenadores') }}
+	    </x-nav-link>
+	</div>
+@endcan
+
+-- CONTROLADOR --
+
+use Illuminate\Support\Facades\Gate;
+
+if(!Gate::allows('soloAdmin')){
+            // abort(403, 'Solo admin manin');
+            return redirect()->route('dashboard');
+}
+
+tambien:
+
+Gate::authorize('soloAdmin');
+
+-- WEB.PHP --
+
+Route::resource('ordenadores', OrdenadorController::class)->parameters([
+    'ordenadores' => 'ordenador',
+])->middleware('can:soloAdmin');
+
+-----------
+BREEZE -> login
+-----------
+
+Route::resource('ordenadores', OrdenadorController::class)->parameters([
+    'ordenadores' => 'ordenador',
+])->middleware(['auth']);
+
+--------------------------------------------------------------------------------------
+TESTS
+--------------------------------------------------------------------------------------
+
+php artisan make:test NombreTest -> el nombre del test tiene que terminar en Test
+
+<?php
+
+use App\Models\Aula;
+use App\Models\Ordenador;
+use App\Models\User;
+
+test('Crear ordenador sin middleware', function () {
+
+    // Crear un usuario cualquiera, no necesariamente admin
+    $usuario = User::factory()->create([
+        'name' => 'admin'  // Usuario cualquiera
+    ]);
+
+    // Crear un aula para asociar al ordenador
+    $aula = Aula::factory()->create();
+
+    // Actuar como el usuario creado y hacer una solicitud POST para crear el ordenador
+    $response = $this->actingAs($usuario)
+                     ->from('/ordenadores/create')
+                     ->post('/ordenadores', [
+                        'marca' => 'Marca 1',
+                        'modelo' => 'Modelo 1',
+                        'aula_id' => $aula->id,
+                     ]);
+
+    // Verificar que el ordenador fue creado y que el usuario es redirigido al "show" del nuevo ordenador
+    $ordenador = Ordenador::first();  // Obtener el primer ordenador creado
+    $response->assertRedirect(route('ordenadores.show', $ordenador->id));  // Verificar que redirige al show del ordenador
+
+    // Verificar que el ordenador fue creado correctamente en la base de datos
+    $this->assertDatabaseHas('ordenadores', [
+        'marca' => 'Marca 1',
+        'modelo' => 'Modelo 1',
+        'aula_id' => $aula->id,
+    ]);
+});
+
+test('Solo el admin puede crear un ordenador', function () {
+
+    // Usuario admin
+    $admin = User::factory()->create([
+        'name' => 'admin'  // Usuario con nombre admin
+    ]);
+
+    // Usuario no admin
+    $usuario = User::factory()->create([
+        'name' => 'manolo'  // Usuario no admin
+    ]);
+
+    // Crear un aula para asociar al ordenador
+    $aula = Aula::factory()->create();
+
+    // Verificar que el usuario admin pueda crear el ordenador
+    $responseAdmin = $this->actingAs($admin)
+                          ->from('/ordenadores/create')
+                          ->post('/ordenadores', [
+                              'marca' => 'Marca 1',
+                              'modelo' => 'Modelo 1',
+                              'aula_id' => $aula->id,
+                          ]);
+
+    // Verificar que el usuario admin es redirigido al show del nuevo ordenador
+    $ordenador = Ordenador::first();  // Obtener el primer ordenador creado
+    $responseAdmin->assertRedirect(route('ordenadores.show', $ordenador->id));  // Verificar la redirección
+
+    // Verificar que el ordenador fue creado en la base de datos
+    $this->assertDatabaseHas('ordenadores', [
+        'marca' => 'Marca 1',
+        'modelo' => 'Modelo 1',
+        'aula_id' => $aula->id,
+    ]);
+
+    // Verificar que un usuario no admin no puede crear el ordenador
+    $responseUsuario = $this->actingAs($usuario)
+                            ->from('/ordenadores/create')
+                            ->post('/ordenadores', [
+                                'marca' => 'Marca 2',
+                                'modelo' => 'Modelo 2',
+                                'aula_id' => $aula->id,
+                            ]);
+
+    // Verificar que un usuario no admin recibe un 403 Forbidden
+    $responseUsuario->assertStatus(403);
+});
+
+test('Eliminar un ordenador', function(){
+
+    $usuario = User::factory()->create([
+        'name' => 'admin'  // Usuario no admin
+    ]);
+
+    $ordenador = Ordenador::factory()->create();
+
+    $response = $this
+        ->actingAs($usuario)
+        ->delete('/ordenadores/'.$ordenador->id);
+
+    $this->assertAuthenticated();
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect('/ordenadores');
+});
+
+--------------------------------------------------------------------------------------	
+LIVEWIRE
+--------------------------------------------------------------------------------------
+
+php artisan make:livewire EjemploTable
+
+--------------------------------------------------------------------------------------
+IMAGENES
+--------------------------------------------------------------------------------------
+
+añadir en la etiqueta de apertura del formulario enctype="multipart/form-data"
+
+en el archivo env, modificar FILESYSTEM_DISK=local por FILESYSTEM_DISK=public
+
+crear carpeta en storage/app/public
+
+php artisan storage:link
+
+
+--------------------------------------------------------------------------------------	
+EMAIL
+--------------------------------------------------------------------------------------
+
+Pagina mailtrap->email testing->my inbox->php->laravel
+
+MAIL_SCHEME=null
+MAIL_FROM_ADDRESS="alejandro@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=b82c6cdba6bfb1
+MAIL_PASSWORD=929e75e79f1531
+
+php artisan make:mail mail
+
+app->mail
+
+    public function content(): Content
+    {
+        return new Content(
+            markdown: 'emails.ejemploMarkdown',
+            text: 'emails.ejemploText'
+        );
+    }
+    
+    views->carpeta emails->plantilla blade
+    
+    web.php
+    
+    Route::get('/correo', function(){
+    Mail::to('alejandro@inbox.mailtrap.io')->send(new enviarCorreo);
+    return redirect()->route('eventos.index');
+});
+
+--------------------------------------------------------------------------------------
+MIGRACIONES Y RELACIONES
+--------------------------------------------------------------------------------------
+
+1. Crearla haciendo una migración
+
+php artisan make:model -cmrfs Empleado
+
+Si quiero crear una tabla pivote:
+
+php artisan make:migration create_ejemplar_cliente_table
+php artisan make:migration create_notas_table
+
+2. Vamos a la migración en vscode y le metemos mano
+
+En Schema::create añadimos cada columna de la tabla. Ej:
+
+$table -> decimal('numero', 4, 0) -> unique();
+
+Para que una columna dependa de otra tabla o este relacionado:
+
+// Clave ajena
+$table -> foreignId('departamento_id') -> constrained();
+
+con "constrained()" establecemos la relacion entre el campo 'departamento_id' de la tabla 
+departamentos y la tabla empleados.
+
+Al poner departamendo_id Laravel ya sabe que ese valor pertenece a la tabla departamentos.
+
+Creamos un índice para que las consultas sean más rápidas:
+
+$table -> index('departamento_id');
+
+Confirmamos la migración en la terminal:
+
+ php artisan migrate
+
+3. Insertamos las filas a la tabla empleados
+
+*terminal*
+
+insert into empleados(numero, nombre,apellidos, departamento_id)
+values(10, 'Pepe', 'Martinez', 4),....
+
+4. Consultamos el modelo (Empleado).
+
+5. Consultamos el controller (EmpleadoController)
+
+6. En el controller creamos una ruta para el index (En este caso para pintar todos los empleados).
+
+return view('empleados.index', [
+	'empleados => '])
+
+7. Creamos la plantilla blade para la ruta anterior.
+
+8. Crear una relacion entre dos tablas (Empleado -- Departamento).
+
+Vamos al modelo Departamento y creamos el método empleados():
+
+public function empleados(){
+  return $this->hasMany(Empleado::class);
+}
+
+hasMany quiere decir que tenemos muchos (1 departamento tiene muchos empleados).
+
+Ahora vamos al modelo Empleado y creamos el método departamento():
+
+public function departamento(){
+  return $this->belongsTo(Departamento::class);
+}
+
+belongsTo quiere decir que 1 Empleado pertenece solo a 1 Departamento
+
+26 min 1. , 2.
+
+--------------------------------------------------------------------------------------------
+FILTROS Y VALIDACIONES
+------------------------------------------------------------------------------------------
+
+$cceeIdFiltro = 1; // Ccee específico que deseas filtrar
+
+$alumno = Alumno::find($alumnoId);
+
+// Obtener las notas del alumno, pero solo del Ccee con el ID especificado
+$notasCcee = $alumno->notas()->where('ccee_id', $cceeIdFiltro)->with('ccee')->get();
+
+foreach ($notasCcee as $nota) {
+    echo "Nota: " . $nota->nota . "\n";
+}
+
+$notasPorCcee = $alumno->notas()->with('ccee')->get()->groupBy('ccee_id');
+
+foreach ($notasPorCcee as $cceeId => $notas) {
+    // Obtener el Ccee relacionado (puedes usar el ID para obtener más detalles si es necesario)
+    $ccee = Ccee::find($cceeId);
+
+    echo "Notas del Ccee: " . $ccee->nombre . " (ID: $cceeId)\n";
+
+    // Recorrer todas las notas de ese Ccee
+    foreach ($notas as $nota) {
+        echo "Nota: " . $nota->nota . "\n";
+    }
+
+    echo "-----------------------------\n";
+}
+
+Validaciión de fechas:
+
+'fecha_hora' => [
+		'required', 
+		'date_format:Y-m-d H:i:s',
+		'after_or_equal:2024-12-07 00:00:00',
+		'before_or_equal:2024-12-31 23:59:59',
+		],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
