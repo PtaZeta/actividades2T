@@ -13,6 +13,6 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-Route::get('reservas', ReservaIndex::class);
+Route::get('reservas', ReservaIndex::class)->middleware('auth');
 
 require __DIR__.'/auth.php';
