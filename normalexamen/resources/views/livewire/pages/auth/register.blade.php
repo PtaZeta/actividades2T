@@ -12,6 +12,7 @@ new #[Layout('layouts.guest')] class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $dni = '';
     public string $password = '';
     public string $password_confirmation = '';
 
@@ -23,7 +24,8 @@ new #[Layout('layouts.guest')] class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'dni' => ['required', 'string'],
+            'password' => ['required', 'string', 'confirmed',    Rules\Password::defaults()],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -43,6 +45,13 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" class="block mt-1 w-full" type="text" name="name" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <!-- Dni -->
+        <div>
+            <x-input-label for="dni" :value="__('Dni')" />
+            <x-text-input wire:model="dni" id="dni" class="block mt-1 w-full" type="text" dni="dni" required autofocus autocomplete="dni" />
+            <x-input-error :messages="$errors->get('dni')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
