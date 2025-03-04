@@ -10,7 +10,9 @@ class Ejemplar extends Model
     /** @use HasFactory<\Database\Factories\EjemplarFactory> */
     use HasFactory;
 
-    public function prestamo()
+    protected $table = 'ejemplares';
+
+    public function prestamos()
     {
         return $this->hasMany(Prestamo::class);
     }
@@ -18,5 +20,10 @@ class Ejemplar extends Model
     public function ejemplable()
     {
         return $this->morphTo();
+    }
+
+    public function estaPrestado()
+    {
+        return $this->prestamos()->whereNull('fecha_devolucion')->exists();
     }
 }

@@ -14,6 +14,6 @@ class Videojuego extends Model
 
     public function ejemplares()
     {
-        return $this->morphMany(Ejemplar::class, 'ejemplares');
+        return $this->morphMany(Ejemplar::class, 'ejemplable');
     }
 }

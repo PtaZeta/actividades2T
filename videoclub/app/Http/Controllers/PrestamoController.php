@@ -13,7 +13,7 @@ class PrestamoController extends Controller
      */
     public function index()
     {
-        //
+        return view('prestamos.index');
     }
 
     /**
