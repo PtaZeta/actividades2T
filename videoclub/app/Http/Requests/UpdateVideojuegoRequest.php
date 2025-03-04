@@ -11,7 +11,7 @@ class UpdateVideojuegoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateVideojuegoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'titulo' => 'required|string|max:255',
+            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

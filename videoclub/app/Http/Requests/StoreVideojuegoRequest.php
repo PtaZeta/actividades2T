@@ -22,7 +22,8 @@ class StoreVideojuegoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'titulo' => 'required|string|max:255',
+            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

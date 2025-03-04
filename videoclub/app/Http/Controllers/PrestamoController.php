@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePeliculaRequest;
-use App\Http\Requests\UpdatePeliculaRequest;
-use App\Models\Pelicula;
+use App\Http\Requests\StorePrestamoRequest;
+use App\Http\Requests\UpdatePrestamoRequest;
+use App\Models\Prestamo;
 
-class PeliculaController extends Controller
+class PrestamoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('peliculas.index');
+        //
     }
 
     /**
@@ -27,7 +27,7 @@ class PeliculaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePeliculaRequest $request)
+    public function store(StorePrestamoRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class PeliculaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pelicula $pelicula)
+    public function show(Prestamo $prestamo)
     {
         //
     }
@@ -43,7 +43,7 @@ class PeliculaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pelicula $pelicula)
+    public function edit(Prestamo $prestamo)
     {
         //
     }
@@ -51,7 +51,7 @@ class PeliculaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePeliculaRequest $request, Pelicula $pelicula)
+    public function update(UpdatePrestamoRequest $request, Prestamo $prestamo)
     {
         //
     }
@@ -59,7 +59,7 @@ class PeliculaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Pelicula $pelicula)
+    public function destroy(Prestamo $prestamo)
     {
         //
     }

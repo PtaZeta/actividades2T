@@ -9,4 +9,11 @@ class Pelicula extends Model
 {
     /** @use HasFactory<\Database\Factories\PeliculaFactory> */
     use HasFactory;
+
+    protected $fillable = ['titulo', 'duracion'];
+
+    public function ejemplares()
+    {
+        return $this->morphMany(Ejemplar::class, 'ejemplares');
+    }
 }
