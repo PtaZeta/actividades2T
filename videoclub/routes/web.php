@@ -4,6 +4,7 @@ use App\Http\Controllers\PeliculaController;
 use App\Http\Controllers\VideojuegoController;
 use App\Livewire\PeliculaIndex;
 use App\Livewire\VideojuegoIndex;
+use App\Models\Videojuego;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -17,6 +18,11 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::resource('peliculas', PeliculaController::class);
+
+Route::get('/videojuegos/{id}', function ($id) {
+    $videojuego = Videojuego::findOrFail($id);
+    return view('livewire.videojuegos.show', compact('videojuego'));
+})->name('videojuegos.show');
 
 Route::resource('videojuegos', VideojuegoController::class);
 require __DIR__.'/auth.php';
