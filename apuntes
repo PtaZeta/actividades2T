@@ -429,8 +429,110 @@ Validaciión de fechas:
 		],
 
 
-------------------------------------------------------------------------------
--------------
+-------------------------------------------------------------------------------------
+POLIMÓRFICA MUCHOS A MUCHOS
+-------------------------------------------------------------------------------------
+
+En Laravel, una relación polimórfica de muchos a muchos se utiliza cuando varios modelos pueden compartir una relación con un modelo intermedio a través de una tabla pivote. Un buen ejemplo es un sistema en el que diferentes tipos de modelos (como Post y Video) pueden compartir etiquetas (Tag).
+📌 Ejemplo: Sistema de Etiquetas para Posts y Videos
+1. Crear la Migración de la Tabla tags
+
+php artisan make:model Tag -m
+
+En el archivo de migración generado (database/migrations/xxxx_xx_xx_create_tags_table.php):
+
+public function up()
+{
+    Schema::create('tags', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->timestamps();
+    });
+}
+
+2. Crear la Tabla Intermedia taggables
+
+php artisan make:migration create_taggables_table
+
+En el archivo de migración:
+
+public function up()
+{
+    Schema::create('taggables', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+        $table->morphs('taggable'); // Esto crea "taggable_id" y "taggable_type"
+        $table->timestamps();
+    });
+}
+
+3. Crear el Modelo Tag
+
+class Tag extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['name'];
+
+    public function taggables()
+    {
+        return $this->morphTo();
+    }
+}
+
+4. Crear los Modelos Post y Video
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['title', 'content'];
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+
+class Video extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['title', 'url'];
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+
+5. Uso de la Relación en el Código
+Asignar Etiquetas a un Post
+
+$post = Post::create(['title' => 'Mi Post', 'content' => 'Contenido del post']);
+$tag = Tag::create(['name' => 'Laravel']);
+
+$post->tags()->attach($tag->id);
+
+Asignar Etiquetas a un Video
+
+$video = Video::create(['title' => 'Tutorial Laravel', 'url' => 'https://youtube.com/video']);
+$tag = Tag::create(['name' => 'PHP']);
+
+$video->tags()->attach($tag->id);
+
+Obtener Etiquetas de un Post o Video
+
+$postTags = $post->tags; // Lista de etiquetas del post
+$videoTags = $video->tags; // Lista de etiquetas del video
+
+Obtener Todos los Modelos Asociados a una Etiqueta
+
+$tag = Tag::where('name', 'Laravel')->first();
+$relatedItems = $tag->taggables; // Obtiene todos los posts y videos con esa etiqueta
+
+
+-------------------------------------------------------------------------------------
 AEROPUERTO
 -------------
 FILTRAR ASIENTOS LIBRES A LA VISTA, CREAR VUELOS CON MUCHOS ASIENTOS VALIDANDO SI ESTÁ DUPLICADO O RESERVADO.
@@ -509,4 +611,4 @@ LO TENGO NO LO TENGO Y TODO CON LIVEWIRE
 -------------
 ZAPATERÍA
 -------------
-CARRITO CON LIVEWIRE
+CARRITO LIVEWIRE
