@@ -17,8 +17,8 @@ class Dispositivo extends Model
         return $this->morphTo();
     }
 
-    public function ordenador()
-    {
-        return $this->morphTo(Ordenador::class);
-    }
+    // public function ordenador()
+    // {
+    //     return $this->morphTo(Ordenador::class);
+    // }
 }
